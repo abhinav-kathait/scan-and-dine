@@ -1,6 +1,6 @@
 // DOM Elements
 const form = document.getElementById('registrationForm');
-const inputs = ['fullName', 'email', 'phone', 'address', 'city', 'password', 'confirmPassword'];
+const inputs = ['fullName', 'email', 'phone', 'city', 'password', 'confirmPassword'];
 const termsCheckbox = document.getElementById('terms');
 const submitBtn = document.getElementById('submitBtn');
 const formMessage = document.getElementById('formMessage');
@@ -19,10 +19,7 @@ const validationRules = {
     test: (value) => /^[0-9]{10}$/.test(value),
     error: 'Phone number must be exactly 10 digits'
   },
-  address: {
-    test: (value) => value.length >= 10,
-    error: 'Address must be at least 10 characters'
-  },
+
   city: {
     test: (value) => value.length >= 2,
     error: 'Please enter a valid city name'
@@ -169,7 +166,7 @@ async function handleRegistration(event) {
       fullName: document.getElementById('fullName').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value,
-      address: document.getElementById('address').value.trim(),
+
       city: document.getElementById('city').value.trim(),
       password: document.getElementById('password').value,
       registeredAt: new Date().toISOString()

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sign In | Savolary</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="registration-styles.css">
+    <!-- Vanta.js & Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
+    <style>
+        /* Specific adjustments for login page if needed */
+        .glass-card {
+            min-height: 500px; /* Slightly shorter than registration */
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="main-container">
+        <!-- Glassmorphism Card -->
+        <div class="glass-card">
+            
+            <!-- Left Side: Visuals/Branding -->
+            <div class="brand-side">
+                <div class="brand-content">
+                    <div class="logo-area">
+                        <h1>🍽️ Savolary</h1>
+                        <span class="since-tag">EST. 2024</span>
+                    </div>
+                    <div class="brand-quote">
+                        <p>"Culinary Masterpiece awaits."</p>
+                    </div>
+                    <ul class="features-list">
+                        <li>✦ Your Favorites Saved</li>
+                        <li>✦ Fast Re-ordering</li>
+                        <li>✦ Track Live Orders</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Side: Form -->
+            <div class="form-side">
+                <div class="form-header">
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to continue your journey</p>
+                </div>
+
+                <form class="registration-form" id="loginForm" onsubmit="handleLogin(event)">
+                    
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="name@example.com" required>
+                        <span class="error-msg" id="emailError"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <button type="button" class="toggle-pass" onclick="togglePasswordVisibility('password')">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                        <span class="error-msg" id="passwordError"></span>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="form-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 0.9rem;">
+                        <label class="custom-checkbox" style="margin: 0;">
+                            <input type="checkbox" id="rememberMe">
+                            <span class="checkmark"></span>
+                            <span class="label-text">Remember Me</span>
+                        </label>
+                        <a href="javascript:void(0)" onclick="openForgotModal()" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="cta-btn" id="submitBtn">
+                        <span class="btn-text">Sign In</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+
+                    <!-- Message -->
+                    <div class="form-message" id="formMessage"></div>
+
+                    <!-- Register Link -->
+                    <div class="auth-switch">
+                        New to Savolary? <a href="registeration_form_updated.html">Create Account</a>
+                        <br><br>
+                        <a href="admin.html" style="font-size: 0.8rem; color: var(--text-muted); text-decoration: none;">Admin Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal-content glass-card" style="max-width: 450px; min-height: auto;">
+            <div class="modal-header">
+                <h2>Reset Password</h2>
+                <button class="close-modal" onclick="closeForgotModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px;">Enter your email address and we'll send you a link to reset your password.</p>
+                
+                <form id="forgotForm" onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label for="forgotEmail">Email Address</label>
+                        <input type="email" id="forgotEmail" placeholder="name@example.com" required>
+                    </div>
+                    
+                    <button type="submit" class="cta-btn" id="forgotSubmitBtn">
+                        <span class="btn-text">Send Reset Link</span>
+                        <div class="spinner" id="forgotSpinner"></div>
+                    </button>
+                    
+                    <div class="form-message" id="forgotMessage"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="login-script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                VANTA.FOG({
+                    el: "#canvas-container",
+                    mouseControls: true,
+                    touchControls: true,
+                    gyroControls: false,
+                    minHeight: 200.00,
+                    minWidth: 200.00,
+                    highlightColor: 0xD35400, 
+                    midtoneColor: 0xD4AF37,
+                    lowlightColor: 0x0f1014,
+                    baseColor: 0x0f1014,
+                    blurFactor: 0.6,
+                    speed: 1.5,
+                    zoom: 1.2
+                });
+            } catch (e) { console.error("Vanta error", e); }
+        });
+    </script>
+</body>
+</html>

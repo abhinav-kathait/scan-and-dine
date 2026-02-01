@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard | Savolary</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #d35400;
+      --gold: #d4af37;
+      --bg-dark: #0f1014;
+      --card-bg: rgba(30, 31, 36, 0.95);
+      --text-main: #f5f5f5;
+      --text-muted: #a0a0a0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 30px;
+    }
+
+    h1 { color: var(--gold); }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-danger {
+      background: #c0392b;
+      color: white;
+    }
+
+    .btn-danger:hover { background: #e74c3c; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* Table Styles */
+    .orders-table-wrapper {
+      overflow-x: auto;
+      background: var(--card-bg);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    th {
+      background: rgba(255,255,255,0.05);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(46, 204, 113, 0.2);
+      color: #2ecc71;
+    }
+
+    .order-items {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: 0.3s;
+    }
+
+    .login-card {
+      background: rgba(255,255,255,0.05);
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      border: 1px solid var(--gold);
+    }
+
+    .login-input {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid #444;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Login Overlay -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <h2 style="color:var(--gold); margin-bottom:20px;">Admin Login</h2>
+      <input type="password" id="password" class="login-input" placeholder="Enter Password (1234)">
+      <button class="btn" style="background:var(--primary); color:white; width:100%" onclick="login()">Login</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>Savolary Admin</h1>
+      <div>
+        <button class="btn" style="background:#555; color:white; margin-right:10px;" onclick="exportCSV()">Export CSV</button>
+        <button class="btn btn-danger" onclick="clearData()">Clear Data</button>
+      </div>
+    </header>
+
+    <!-- Key Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Orders</h3>
+        <div class="stat-value" id="totalOrders">0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Revenue</h3>
+        <div class="stat-value" id="totalRevenue">₹0</div>
+      </div>
+      <div class="stat-card">
+        <h3>Today's Orders</h3>
+        <div class="stat-value" id="todayOrders">0</div>
+      </div>
+    </div>
+
+    <!-- Orders List -->
+    <div class="orders-table-wrapper">
+      <table id="ordersTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Order ID</th>
+            <th>Customer Phone</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <!-- Rows will be injected here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // --- Check usage ---
+    if (window.location.protocol === 'file:') {
+        alert("⚠️ You are opening this file directly! \n\nPlease access via the server: http://localhost:3000/admin.html \n\nData cannot load from a file path.");
+    }
+
+    // --- Dynamic API Base ---
+    const getApiBase = () => {
+        return window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    };
+
+    // --- Authentication ---
+    function login() {
+      const pass = document.getElementById('password').value;
+      if(pass === '1234') {
+        document.getElementById('loginOverlay').classList.add('hidden');
+        loadData();
+      } else {
+        alert('Incorrect Password');
+      }
+    }
+
+    // --- Data Loading ---
+    async function loadData() {
+      // Fetch from Backend
+      let orders = [];
+      try {
+        const res = await fetch(`${getApiBase()}/api/orders`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        orders = await res.json();
+      } catch (e) {
+        console.error("Failed to load orders", e);
+        alert("Failed to load orders from server. Is the server running? \nError: " + e.message);
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Connection Error. Check Server.</td></tr>';
+        return;
+      }
+      
+      const tbody = document.getElementById('tableBody');
+      const totalOrdersEl = document.getElementById('totalOrders');
+      const totalRevenueEl = document.getElementById('totalRevenue');
+      const todayOrdersEl = document.getElementById('todayOrders');
+      
+      tbody.innerHTML = ''; // Clear current
+
+      let revenue = 0;
+      let todaysCount = 0;
+      const todayStr = new Date().toLocaleDateString();
+
+      // Always update counts even if empty
+      totalOrdersEl.textContent = orders.length;
+
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#666;">No orders found in database.</td></tr>';
+        // Ensure other stats are zeroed
+        totalRevenueEl.textContent = '₹0';
+        todayOrdersEl.textContent = 0;
+        return;
+      }
+
+      orders.forEach(order => {
+        // Calculate Stats
+        const amount = parseFloat(order.total);
+        revenue += isNaN(amount) ? 0 : amount;
+        
+        // Check date for "Today" stat (basic check)
+        // Convert both to date string to compare
+        try {
+            const orderDate = order.id ? new Date(order.id).toLocaleDateString() : new Date().toLocaleDateString();
+            if(order.date.includes(todayStr) || orderDate === todayStr) {
+                todaysCount++;
+            }
+        } catch(e) {}
+
+        // Format Items List
+        let itemsStr = "No Items";
+        if(Array.isArray(order.items)) {
+             itemsStr = order.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+        }
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${order.date}</td>
+          <td style="font-family:monospace; color:var(--primary)">#${order.id}</td>
+          <td>${order.phone || 'N/A'}</td>
+          <td class="order-items">${itemsStr}</td>
+          <td style="font-weight:bold">₹${order.total}</td>
+          <td><span class="status-badge">${order.status || 'Completed'}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Update UI Stats
+      totalRevenueEl.textContent = `₹${revenue.toLocaleString()}`;
+      todayOrdersEl.textContent = todaysCount;
+    }
+
+    // --- Actions ---
+    async function clearData() {
+      if(confirm('Are you sure you want to DELETE ALL order history? This cannot be undone.')) {
+        try {
+          const res = await fetch(`${getApiBase()}/api/clear`, { method: 'POST' });
+          if(!res.ok) throw new Error("Server error");
+          loadData();
+          alert('Database Cleared.');
+        } catch (e) {
+          alert('Failed to clear database: ' + e.message);
+        }
+      }
+    }
+
+    async function exportCSV() {
+       // Fetch latest data first
+       let orders = [];
+       try {
+         const res = await fetch(`${getApiBase()}/api/orders`);
+         orders = await res.json();
+       } catch (e) { orders = []; }
+      
+       if(orders.length === 0) return alert('No data to export');
+
+       let csv = 'Date,Order ID,Phone,Total,Items\n';
+       orders.forEach(o => {
+         // Escape commas in items for CSV
+         const itemsClean = o.items ? o.items.map(i => `${i.qty}x ${i.name}`).join(' | ').replace(/,/g, '') : "";
+         csv += `"${o.date}",${o.id},${o.phone || ''},${o.total},"${itemsClean}"\n`;
+       });
+
+       const blob = new Blob([csv], { type: 'text/csv' });
+       const url = window.URL.createObjectURL(blob);
+       const a = document.createElement('a');
+       a.setAttribute('hidden', '');
+       a.setAttribute('href', url);
+       a.setAttribute('download', 'savolary_orders.csv');
+       document.body.appendChild(a);
+       a.click();
+       document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>

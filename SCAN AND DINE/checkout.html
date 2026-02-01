@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout | Savolary</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
+  
+  <!-- Reuse Menu Styles for Layout Variables -->
+  <link rel="stylesheet" href="menu-styles.css">
+
+  <style>
+    /* Checkout Specific Overrides */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: auto; /* Allow scrolling if height is small */
+    }
+
+    .checkout-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 480px;
+      margin: 2rem;
+      perspective: 1000px;
+    }
+
+    .glass-card {
+      background: rgba(30, 31, 36, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      animation: floatUp 0.8s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes floatUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .banner {
+      width: 100%;
+      height: 140px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    }
+
+    h1 {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      text-align: center;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .total-amount {
+      text-align: center;
+      font-size: 1.4rem;
+      color: var(--text-main);
+      margin-bottom: 30px;
+      font-weight: 500;
+      padding: 10px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+    }
+
+    /* Form Styling */
+    label {
+      display: block;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    input[type="tel"], input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--gold);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--primary), #d35400);
+      border: none;
+      border-radius: 30px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+      font-family: var(--font-body);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(211, 84, 0, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--primary);
+      margin-bottom: 25px;
+    }
+    .btn-outline:hover {
+      background: rgba(211, 84, 0, 0.1);
+    }
+
+    #qr-code {
+      display: block;
+      margin: 20px auto;
+      max-width: 180px;
+      border-radius: 10px;
+      border: 2px solid var(--gold);
+      padding: 5px;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div id="canvas-container"></div>
+
+  <div class="checkout-wrapper">
+    <div class="glass-card">
+      <div class="banner">
+        <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092" alt="Savolary Banner" />
+        <div class="banner-overlay"></div>
+      </div>
+
+      <h1>Checkout</h1>
+      <div class="total-amount" id="amount">Total: ₹0</div>
+
+      <label for="phone">Mobile Number</label>
+      <input type="tel" id="phone" placeholder="Enter 10-digit number" autocomplete="tel">
+      
+      <button class="btn-primary btn-outline" onclick="generateOTP()">Generate OTP</button>
+
+      <label for="otp">One Time Password</label>
+      <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6">
+
+      <div class="qr-container" style="text-align: center; margin: 20px 0;">
+        <p style="color: var(--gold); margin-bottom: 10px; font-size: 0.9rem;">Scan to Pay via UPI</p>
+        <img id="qr-code" src="" alt="Generating Payment QR..." style="min-height: 180px;">
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">UPI: 9953479419@axl</p>
+      </div>
+
+      <button class="btn-primary" onclick="payNow()">Confirm Payment</button>
+    </div>
+  </div>
+
+  <script>
+    // --- Vanta Background ---
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        VANTA.FOG({
+          el: "#canvas-container",
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          highlightColor: 0xD35400, 
+          midtoneColor: 0xD4AF37,
+          lowlightColor: 0x0f1014,
+          baseColor: 0x0f1014,
+          blurFactor: 0.6,
+          speed: 1.5,
+          zoom: 1.2
+        });
+      } catch (e) { console.error(e); }
+      
+      // --- Dynamic QR Generation ---
+      const params = new URLSearchParams(window.location.search);
+      // Check URL first, then LocalStorage
+      let total = params.get('total');
+      
+      if (!total || total === '0') {
+          total = localStorage.getItem('cartTotal') || '0';
+      }
+      
+      // Update Total Text
+      document.getElementById('amount').innerText = `Total Payable: ₹${total}`;
+
+      // Generate UPI Link: upi://pay?pa=[UPI_ID]&pn=[NAME]&am=[AMOUNT]&cu=INR
+      const upiID = "9953479419@axl";
+      const upiURL = `upi://pay?pa=${upiID}&pn=Savolary&am=${total}&cu=INR`;
+      
+      // Use QR Server API
+      const qrImageURL = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiURL)}`;
+      document.getElementById('qr-code').src = qrImageURL;
+    });
+
+    // --- Payment Logic ---
+    let generatedOTP = null;
+
+
+    // --- Dynamic API Base ---
+    const getApiBase = () => {
+        // If served from file://, use localhost. If served from a domain (Render/Vercel), use relative path.
+        return window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+    };
+
+    function generateOTP() {
+      const phone = document.getElementById("phone").value;
+      if (phone.length >= 10) {
+        // 1. Generate Random 6-digit JS Code
+        generatedOTP = Math.floor(100000 + Math.random() * 900000);
+        
+        const btn = document.querySelector('.btn-outline');
+        btn.innerText = "Sending...";
+        
+        setTimeout(() => {
+          // 2. Simulate SMS Delivery
+          alert(`SECRET OTP sent to ${phone}: ${generatedOTP}\n(Do not share this code)`);
+          btn.innerText = "Resend OTP";
+          // Focus OTP input for better UX
+          document.getElementById('otp').focus();
+        }, 1000);
+      } else {
+        alert("Please enter a valid 10-digit phone number.");
+      }
+    }
+
+    function payNow() {
+      const inputOTP = document.getElementById("otp").value;
+      
+      if (!generatedOTP) {
+        alert("Please generate an OTP first!");
+        return;
+      }
+
+      // 3. Strict Validation
+      if (parseInt(inputOTP) === generatedOTP) {
+        const btn = document.querySelector('button[onclick="payNow()"]');
+        const originalText = btn.innerText;
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+          // SAVE ORDER TO DATABASE (NODE.JS API)
+          const phone = document.getElementById("phone").value;
+          const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+          const totalAmount = localStorage.getItem('cartTotal') || '0';
+          
+          const newOrder = {
+              id: Date.now(),
+              date: new Date().toLocaleString(),
+              phone: phone,
+              items: cartItems,
+              total: totalAmount,
+              status: 'Completed'
+          };
+          
+          // Send to Backend
+          fetch(`${getApiBase()}/api/orders`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(newOrder)
+          })
+          .then(res => res.json())
+          .then(data => {
+              // Clear current cart
+              localStorage.removeItem('cart');
+              localStorage.removeItem('cartTotal');
+              localStorage.removeItem('ordersDatabase'); // Cleanup old local DB if present
+
+              alert("Payment Successful! Welcome to Savolary.");
+              window.location.href = "menu_cart_updated.html";
+          })
+          .catch(err => {
+              console.error(err);
+              alert("Payment Successful (Offline Mode)");
+              window.location.href = "menu_cart_updated.html";
+          });
+        }, 1500);
+      } else {
+        alert("Incorrect OTP! Please try again.");
+      }
+    }
+  </script>
+</body>
+</html>

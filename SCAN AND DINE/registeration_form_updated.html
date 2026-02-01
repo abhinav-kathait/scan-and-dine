@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Join Savolary | Premium Dining</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="registration-styles.css">
+    <!-- Vanta.js & Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="main-container">
+        <!-- Glassmorphism Card -->
+        <div class="glass-card">
+            
+            <!-- Left Side: Visuals/Branding -->
+            <div class="brand-side">
+                <div class="brand-content">
+                    <div class="logo-area">
+                        <h1>🍽️ Savolary</h1>
+                        <span class="since-tag">EST. 2024</span>
+                    </div>
+                    <div class="brand-quote">
+                        <p>"Experience the symphony of authentic flavors."</p>
+                    </div>
+                    <ul class="features-list">
+                        <li>✦ Exclusive Member Perks</li>
+                        <li>✦ Priority Reservations</li>
+                        <li>✦ Curated Chef's Menu</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Side: Form -->
+            <div class="form-side">
+                <div class="form-header">
+                    <h2>Create Account</h2>
+                    <p>Begin your gastronomic journey</p>
+                </div>
+
+                <form class="registration-form" id="registrationForm" onsubmit="handleRegistration(event)">
+                    
+                    <div class="input-grid">
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="e.g. Aditi Sharma" required pattern="[A-Za-z\s]+" minlength="3">
+                            <span class="error-msg" id="fullNameError"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="name@example.com" required>
+                            <span class="error-msg" id="emailError"></span>
+                        </div>
+                    </div>
+
+                    <div class="input-grid">
+                        <!-- Phone -->
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="10-digit number" required pattern="[0-9]{10}" maxlength="10">
+                            <span class="error-msg" id="phoneError"></span>
+                        </div>
+
+                        <!-- City -->
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" placeholder="Your City" required>
+                            <span class="error-msg" id="cityError"></span>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group">
+                        <label for="address">Delivery Address</label>
+                        <textarea id="address" name="address" placeholder="Complete street address for delivery..." rows="2" required minlength="10"></textarea>
+                        <span class="error-msg" id="addressError"></span>
+                    </div>
+
+                    <div class="input-grid">
+                        <!-- Password -->
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="password" name="password" placeholder="Min. 8 chars" required minlength="8">
+                                <button type="button" class="toggle-pass" onclick="togglePasswordVisibility('password')">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                            </div>
+                            <div class="password-strength" id="passwordStrength"></div>
+                            <span class="error-msg" id="passwordError"></span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat password" required>
+                            </div>
+                            <span class="error-msg" id="confirmPasswordError"></span>
+                        </div>
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="checkbox-group">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <span class="checkmark"></span>
+                            <span class="label-text">I agree to the <a href="javascript:void(0)" onclick="openModal('terms')">Terms</a> & <a href="javascript:void(0)" onclick="openModal('privacy')">Privacy Policy</a></span>
+                        </label>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="cta-btn" id="submitBtn">
+                        <span class="btn-text">Register Now</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+
+                    <!-- Message -->
+                    <div class="form-message" id="formMessage"></div>
+
+                    <!-- Login Link -->
+                    <div class="auth-switch">
+                        Already have an account? <a href="login.html">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legal Modal -->
+    <div class="modal-overlay" id="legalModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h2 id="modalTitle">Terms of Service</h2>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="registration-script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                VANTA.FOG({
+                    el: "#canvas-container",
+                    mouseControls: true,
+                    touchControls: true,
+                    gyroControls: false,
+                    minHeight: 200.00,
+                    minWidth: 200.00,
+                    highlightColor: 0xD35400, 
+                    midtoneColor: 0xD4AF37,
+                    lowlightColor: 0x0f1014,
+                    baseColor: 0x0f1014,
+                    blurFactor: 0.6,
+                    speed: 1.5,
+                    zoom: 1.2
+                });
+            } catch (e) { console.error("Vanta error", e); }
+        });
+    </script>
+</body>
+</html>

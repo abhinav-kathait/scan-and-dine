@@ -427,6 +427,10 @@ body {
         grid-template-columns: 1fr;
         gap: 0;
     }
+
+    .glass-card {
+        min-height: auto;
+    }
     
     .brand-side {
         padding: 30px 20px;

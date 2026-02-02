@@ -113,14 +113,18 @@ body {
   cursor: pointer;
 }
 
+/* Cart Button */
 .cart-btn {
-  background: relative;
+  background: transparent;
   border: none;
-  background: none;
   font-size: 1.5rem;
   cursor: pointer;
   position: relative;
   transition: transform 0.2s;
+  display: flex; /* alignment */
+  align-items: center;
+  justify-content: center;
+  color: var(--text-main); /* Ensure color */
 }
 
 .cart-btn:hover {
@@ -509,9 +513,21 @@ body {
 /* Responsive */
 /* Responsive */
 @media (max-width: 768px) {
-  .header { padding: 15px 20px; }
-  .brand-text { font-size: 1.4rem; }
+  .header { padding: 10px 15px; }
+  .brand-text { font-size: 1.3rem; }
   .hero-title { font-size: 3rem; }
+  
+  /* Compact Search on Mobile */
+  .search-container {
+      padding: 5px 10px;
+  }
+  .search-container input {
+      width: 100px; /* Smaller width */
+  }
+
+  .header-right {
+      gap: 15px;
+  }
   
   /* Only full width for the side-cart, not the popup */
   .cart-modal:not(.nutrition-popup) { width: 100%; }
@@ -532,7 +548,45 @@ body {
 }
 
 @media (max-width: 480px) {
-    .hero-title { font-size: 2.5rem; }
+    .header { 
+        padding: 10px 12px; 
+        flex-wrap: nowrap; /* Prevent wrapping */
+    }
+    
+    .brand-text { 
+        font-size: 1.2rem; 
+        white-space: nowrap; /* Keep branding on one line */
+    }
+    
+    /* Minimize Search to just icon */
+    .search-container {
+        border: none;
+        background: transparent;
+        padding: 0;
+        margin-right: 5px;
+    }
+    .search-container input {
+        display: none !important;
+    }
+    .search-container button {
+        font-size: 1.3rem; 
+        padding: 5px;
+        color: var(--gold);
+    }
+    
+    /* Ensure Header Right (Buttons) are visible */
+    .header-right {
+        gap: 8px;
+        flex-shrink: 0; /* Do not shrink buttons */
+    }
+    
+    /* Adjust buttons specifically for mobile */
+    .cart-btn {
+        font-size: 1.4rem;
+        padding: 5px;
+    }
+
+    .hero-title { font-size: 2.2rem; }
     .hero { height: auto; min-height: 50vh; padding-top: 100px; padding-bottom: 40px; }
     
     #chatbot-widget {

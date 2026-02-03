@@ -18,8 +18,8 @@ Scan and Dine is a digital restaurant ordering system that allows customers to s
 ## 🛠️ Tech Stack
 
 - Frontend: HTML, CSS, JavaScript  
-- Backend: (Add backend technology if used)  
-- Database: (Add database if used)  
+- Backend: node js
+- Database: sql-js
 - Version Control: Git & GitHub  
 
 ---
